@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +15,13 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidubce.auth.DefaultBceCredentials;
+import com.baidubce.services.bos.BosClient;
+import com.baidubce.services.bos.BosClientConfiguration;
+import com.baidubce.services.bos.model.BosObjectSummary;
+import com.baidubce.services.bos.model.ListObjectsResponse;
 import com.samon.administrator.uclass.db.Subject;
+import com.samon.administrator.uclass.util.BosUtil;
 import com.samon.administrator.uclass.util.HttpUtil;
 import com.samon.administrator.uclass.util.JsonUtil;
 
@@ -38,6 +45,11 @@ public class ChooseAreaFragment extends Fragment {
 
     private List<Subject> subjectList;
     private Subject selectedSubject;
+
+    private String endpoint = "http://bj.bcebos.com";
+    private String ak = "EEdfea963ed6544446235cc168976715";
+    private String sk = "5d1246f907a0a81cba98c06d72d9ac78";
+    private String bucketName = "geiliweike";
 
     @Override
     public View onCreateView( LayoutInflater inflater,  ViewGroup container,  Bundle savedInstanceState) {
@@ -71,6 +83,17 @@ public class ChooseAreaFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 querySubjects();
+
+
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        ListObjectsResponse listing = client.listObjects(bucketName);
+//                        for (BosObjectSummary objectSummary : listing.getContents()) {
+//                            Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
+//                        }
+//                    }
+//                }).start();
             }
         });
 
@@ -88,6 +111,7 @@ public class ChooseAreaFragment extends Fragment {
         titleText.setText("科目");
         backButton.setVisibility(View.GONE);
         subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
+        //DataSupport.deleteAll(Subject.class);
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
@@ -96,9 +120,31 @@ public class ChooseAreaFragment extends Fragment {
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
         }else {
-            String address = "http://guolin.tech/api/china";
-            queryFromServer(address);//从服务器上读取数据并存入数据库中
+//            String address = "http://guolin.tech/api/china";
+//            queryFromServer(address);//从服务器上读取数据并存入数据库中
+//            queryFromBosServer();
+            BosUtil.sendBosRequest(ak,sk,endpoint,bucketName);
         }
+
+    }
+
+    private void queryFromBosServer() {
+
+        BosClientConfiguration config = new BosClientConfiguration();
+        config.setCredentials(new DefaultBceCredentials(ak, sk));   //您的AK/SK
+        config.setEndpoint(endpoint);    //传入Bucket所在区域域名
+        final BosClient client = new BosClient(config);
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ListObjectsResponse listing = client.listObjects(bucketName);
+                for (BosObjectSummary objectSummary : listing.getContents()) {
+                    Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
+                }
+            }
+        }).start();
     }
 
     private void queryFromServer(String address) {
@@ -108,12 +154,14 @@ public class ChooseAreaFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
+
                 result = JsonUtil.handleSubjectResponse(responseText);
                 if (result){
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             querySubjects();
+
                         }
                     });
                 }
