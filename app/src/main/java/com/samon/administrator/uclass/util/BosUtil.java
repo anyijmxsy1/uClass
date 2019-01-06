@@ -30,16 +30,16 @@ public class BosUtil {
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
                 String responseText = listing.getContents().toString();
-                handleBosResponse(responseText);
+//                handleBosResponse(responseText);
 
 //                result = JsonUtil.handleSubjectResponse(responseText);
 //                Log.d("xsy1", "run: "+listing.getMaxKeys());
-//                for (BosObjectSummary objectSummary : listing.getContents()) {
-//                    Subject subject = new Subject();
-//                    subject.setSubjectName(objectSummary.getKey());
-//                    subject.save();
-//                    Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
-//                }
+                for (BosObjectSummary objectSummary : listing.getContents()) {
+                    Subject subject = new Subject();
+                    subject.setSubjectName(objectSummary.getKey());
+                    subject.save();
+                    Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
+                }
             }
         }).start();
 
@@ -55,6 +55,7 @@ public class BosUtil {
                     Subject subject = new Subject();
                     subject.setSubjectName(jsonObject.getString("key"));
                     subject.save();
+
                 }
             } catch (JSONException e) {
                 e.printStackTrace();

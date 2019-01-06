@@ -110,8 +110,8 @@ public class ChooseAreaFragment extends Fragment {
     private void querySubjects() {
         titleText.setText("科目");
         backButton.setVisibility(View.GONE);
-        subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
         //DataSupport.deleteAll(Subject.class);
+        subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
@@ -134,7 +134,6 @@ public class ChooseAreaFragment extends Fragment {
         config.setCredentials(new DefaultBceCredentials(ak, sk));   //您的AK/SK
         config.setEndpoint(endpoint);    //传入Bucket所在区域域名
         final BosClient client = new BosClient(config);
-
 
         new Thread(new Runnable() {
             @Override
@@ -165,7 +164,6 @@ public class ChooseAreaFragment extends Fragment {
                         }
                     });
                 }
-
             }
 
             @Override
@@ -176,9 +174,7 @@ public class ChooseAreaFragment extends Fragment {
                         Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
                     }
                 });
-
             }
-
         });
     }
 }
