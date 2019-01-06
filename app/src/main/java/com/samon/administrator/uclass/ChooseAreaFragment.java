@@ -25,6 +25,7 @@ import com.samon.administrator.uclass.util.BosUtil;
 import com.samon.administrator.uclass.util.HttpUtil;
 import com.samon.administrator.uclass.util.JsonUtil;
 
+import org.litepal.LitePal;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -36,6 +37,11 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class ChooseAreaFragment extends Fragment {
+
+    public static final int LEVEL_SUBJECT = 0;
+    public static final int LEVEL_COURSE= 1;
+    private int currentLevel;
+
 
     private TextView titleText;
     private Button backButton;
@@ -72,6 +78,10 @@ public class ChooseAreaFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (currentLevel == LEVEL_SUBJECT){
+                    selectedSubject = subjectList.get(position);
+                    queryCourses();
+                }
 
             }
         });
@@ -83,17 +93,6 @@ public class ChooseAreaFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 querySubjects();
-
-
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ListObjectsResponse listing = client.listObjects(bucketName);
-//                        for (BosObjectSummary objectSummary : listing.getContents()) {
-//                            Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
-//                        }
-//                    }
-//                }).start();
             }
         });
 
@@ -101,6 +100,21 @@ public class ChooseAreaFragment extends Fragment {
         第一次运行碎片时要运行的方法
          */
         querySubjects();
+
+    }
+
+    private void queryCourses() {
+        titleText.setText("课程列表");
+        backButton.setVisibility(View.VISIBLE);
+        //DataSupport.deleteAll(Subject.class);
+        subjectList = DataSupport.where("subjectName > ?",String.valueOf(selectedSubject.getSubjectName())).find(Subject.class);//从数据库读取数据
+        dataList.clear();
+        for (Subject subject:subjectList){
+            dataList.add(subject.getSubjectName());
+        }
+        adapter.notifyDataSetChanged();
+        listView.setSelection(0);
+        currentLevel = LEVEL_COURSE;
 
     }
 
@@ -115,66 +129,80 @@ public class ChooseAreaFragment extends Fragment {
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
-                dataList.add(subject.getSubjectName());
+                if (subject.getSize()==0){
+                    dataList.add(subject.getSubjectName());
+                }
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
+            currentLevel = LEVEL_SUBJECT;
         }else {
 //            String address = "http://guolin.tech/api/china";
 //            queryFromServer(address);//从服务器上读取数据并存入数据库中
 //            queryFromBosServer();
             BosUtil.sendBosRequest(ak,sk,endpoint,bucketName);
+            //LitePal.getDatabase();//最简单的一次数据库操作，以便数据库产生，但其实放在这里没有什么作用
+            subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
+            if (subjectList.size()>0){
+                dataList.clear();
+                for (Subject subject:subjectList){
+                    dataList.add(subject.getSubjectName());
+                }
+                adapter.notifyDataSetChanged();
+                listView.setSelection(0);
+            }
         }
 
     }
 
-    private void queryFromBosServer() {
 
-        BosClientConfiguration config = new BosClientConfiguration();
-        config.setCredentials(new DefaultBceCredentials(ak, sk));   //您的AK/SK
-        config.setEndpoint(endpoint);    //传入Bucket所在区域域名
-        final BosClient client = new BosClient(config);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                ListObjectsResponse listing = client.listObjects(bucketName);
-                for (BosObjectSummary objectSummary : listing.getContents()) {
-                    Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
-                }
-            }
-        }).start();
-    }
-
-    private void queryFromServer(String address) {
-        HttpUtil.sendOkHttpRequest(address, new Callback() {
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String responseText = response.body().string();
-                boolean result = false;
-
-                result = JsonUtil.handleSubjectResponse(responseText);
-                if (result){
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            querySubjects();
-
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-        });
-    }
+//
+//    private void queryFromBosServer() {
+//
+//        BosClientConfiguration config = new BosClientConfiguration();
+//        config.setCredentials(new DefaultBceCredentials(ak, sk));   //您的AK/SK
+//        config.setEndpoint(endpoint);    //传入Bucket所在区域域名
+//        final BosClient client = new BosClient(config);
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                ListObjectsResponse listing = client.listObjects(bucketName);
+//                for (BosObjectSummary objectSummary : listing.getContents()) {
+//                    Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
+//                }
+//            }
+//        }).start();
+//    }
+//
+//    private void queryFromServer(String address) {
+//        HttpUtil.sendOkHttpRequest(address, new Callback() {
+//
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String responseText = response.body().string();
+//                boolean result = false;
+//                result = JsonUtil.handleSubjectResponse(responseText);
+//                if (result){
+//                    getActivity().runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            querySubjects();
+//
+//                        }
+//                    });
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+//            }
+//        });
+//    }
 }

@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class BosUtil {
 
     public static void sendBosRequest(String AccessKeyID,String SecretAccessKey,String EndPoint,final String bucketName){
@@ -22,45 +23,44 @@ public class BosUtil {
         config.setEndpoint(EndPoint);    //传入Bucket所在区域域名
         final BosClient client = new BosClient(config);
 
-
-
-
         new Thread(new Runnable() {
             @Override
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
                 String responseText = listing.getContents().toString();
 //                handleBosResponse(responseText);
-
 //                result = JsonUtil.handleSubjectResponse(responseText);
 //                Log.d("xsy1", "run: "+listing.getMaxKeys());
                 for (BosObjectSummary objectSummary : listing.getContents()) {
                     Subject subject = new Subject();
                     subject.setSubjectName(objectSummary.getKey());
-                    subject.save();
+                    subject.setSize(objectSummary.getSize());
+                    subject.save();//存入数据库
+                    subject.updateAll();
                     Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
                 }
             }
         }).start();
 
 
+
     }
 
-    private static void handleBosResponse(String responseText) {
-        if (!TextUtils.isEmpty(responseText)){
-            try {
-                JSONArray jsonArray = new JSONArray(responseText);
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    Subject subject = new Subject();
-                    subject.setSubjectName(jsonObject.getString("key"));
-                    subject.save();
-
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    private static void handleBosResponse(String responseText) {
+//        if (!TextUtils.isEmpty(responseText)){
+//            try {
+//                JSONArray jsonArray = new JSONArray(responseText);
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                    Subject subject = new Subject();
+//                    subject.setSubjectName(jsonObject.getString("key"));
+//                    subject.save();
+//
+//                }
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 }
