@@ -20,6 +20,7 @@ import com.baidubce.services.bos.BosClient;
 import com.baidubce.services.bos.BosClientConfiguration;
 import com.baidubce.services.bos.model.BosObjectSummary;
 import com.baidubce.services.bos.model.ListObjectsResponse;
+import com.samon.administrator.uclass.db.Course;
 import com.samon.administrator.uclass.db.Subject;
 import com.samon.administrator.uclass.util.BosUtil;
 import com.samon.administrator.uclass.util.HttpUtil;
@@ -50,7 +51,9 @@ public class ChooseAreaFragment extends Fragment {
     private List<String> dataList = new ArrayList<>();
 
     private List<Subject> subjectList;
+    private List<Course> courseList;
     private Subject selectedSubject;
+    private Course selectedCourse;
 
     private String endpoint = "http://bj.bcebos.com";
     private String ak = "EEdfea963ed6544446235cc168976715";
@@ -78,8 +81,14 @@ public class ChooseAreaFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
+                if (currentLevel == LEVEL_SUBJECT){
+                    selectedSubject = subjectList.get(position);
+                    queryCourses();
+                }else  if (currentLevel == LEVEL_COURSE){
+                    selectedCourse = courseList.get(position);
+                    titleText.setText(selectedCourse.getCourseName());
+                    backButton.setVisibility(View.VISIBLE);
+                }
             }
         });
 
@@ -99,16 +108,28 @@ public class ChooseAreaFragment extends Fragment {
         querySubjects();
 
     }
-
+    /*
+    优先从数据库查询数据并显示，如果没有，从服务上查询并存入Course数据库
+     */
     private void queryCourses() {
-        titleText.setText("课程列表");
+        titleText.setText(selectedSubject.getSubjectName());
         backButton.setVisibility(View.VISIBLE);
-
-
+        courseList= DataSupport.where("courseid = ?", String.valueOf(selectedSubject.getId())).find(Course.class);//从数据库读取数据
+        if (courseList.size()>0){
+            dataList.clear();
+            for (Course course:courseList){
+                    dataList.add(course.getCourseName());
+            }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            currentLevel = LEVEL_COURSE;
+        }else {
+            BosUtil.sendCourseRequestToBos(ak,sk,endpoint,bucketName,selectedSubject);
+        }
     }
 
     /*
-    优先从数据库查询数据，如果没有，从服务上查询并存入数据库
+    优先从数据库查询数据并显示，如果没有，从服务上查询并存入Subject数据库
      */
     private void querySubjects() {
         titleText.setText("科目");
@@ -119,71 +140,15 @@ public class ChooseAreaFragment extends Fragment {
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
-                if (subject.getSize()==0){
                     dataList.add(subject.getSubjectName());
-                }
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
             currentLevel = LEVEL_SUBJECT;
         }else {
-//            String address = "http://guolin.tech/api/china";
-//            queryFromServer(address);//从服务器上读取数据并存入数据库中
-//            queryFromBosServer();
-            BosUtil.sendBosRequest(ak,sk,endpoint,bucketName);
-
+            BosUtil.sendSubjectRequestToBos(ak,sk,endpoint,bucketName);
         }
-
     }
 
 
-//
-//    private void queryFromBosServer() {
-//
-//        BosClientConfiguration config = new BosClientConfiguration();
-//        config.setCredentials(new DefaultBceCredentials(ak, sk));   //您的AK/SK
-//        config.setEndpoint(endpoint);    //传入Bucket所在区域域名
-//        final BosClient client = new BosClient(config);
-//
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                ListObjectsResponse listing = client.listObjects(bucketName);
-//                for (BosObjectSummary objectSummary : listing.getContents()) {
-//                    Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
-//                }
-//            }
-//        }).start();
-//    }
-//
-//    private void queryFromServer(String address) {
-//        HttpUtil.sendOkHttpRequest(address, new Callback() {
-//
-//            @Override
-//            public void onResponse(Call call, Response response) throws IOException {
-//                String responseText = response.body().string();
-//                boolean result = false;
-//                result = JsonUtil.handleSubjectResponse(responseText);
-//                if (result){
-//                    getActivity().runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            querySubjects();
-//
-//                        }
-//                    });
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call call, IOException e) {
-//                getActivity().runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            }
-//        });
-//    }
 }
