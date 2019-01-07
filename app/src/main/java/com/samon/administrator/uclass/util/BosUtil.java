@@ -27,16 +27,11 @@ public class BosUtil {
             @Override
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
-                String responseText = listing.getContents().toString();
-//                handleBosResponse(responseText);
-//                result = JsonUtil.handleSubjectResponse(responseText);
-//                Log.d("xsy1", "run: "+listing.getMaxKeys());
                 for (BosObjectSummary objectSummary : listing.getContents()) {
                     Subject subject = new Subject();
                     subject.setSubjectName(objectSummary.getKey());
                     subject.setSize(objectSummary.getSize());
                     subject.save();//存入数据库
-                    subject.updateAll();
                     Log.d("xsy", "sendBosRequest: "+objectSummary.getKey());
                 }
             }

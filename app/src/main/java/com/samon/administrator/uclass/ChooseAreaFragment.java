@@ -78,10 +78,7 @@ public class ChooseAreaFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (currentLevel == LEVEL_SUBJECT){
-                    selectedSubject = subjectList.get(position);
-                    queryCourses();
-                }
+
 
             }
         });
@@ -106,15 +103,7 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCourses() {
         titleText.setText("课程列表");
         backButton.setVisibility(View.VISIBLE);
-        //DataSupport.deleteAll(Subject.class);
-        subjectList = DataSupport.where("subjectName > ?",String.valueOf(selectedSubject.getSubjectName())).find(Subject.class);//从数据库读取数据
-        dataList.clear();
-        for (Subject subject:subjectList){
-            dataList.add(subject.getSubjectName());
-        }
-        adapter.notifyDataSetChanged();
-        listView.setSelection(0);
-        currentLevel = LEVEL_COURSE;
+
 
     }
 
@@ -126,6 +115,7 @@ public class ChooseAreaFragment extends Fragment {
         backButton.setVisibility(View.GONE);
         //DataSupport.deleteAll(Subject.class);
         subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
+        Log.d("xsy1", "querySubjects: "+subjectList.size());
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
@@ -141,16 +131,7 @@ public class ChooseAreaFragment extends Fragment {
 //            queryFromServer(address);//从服务器上读取数据并存入数据库中
 //            queryFromBosServer();
             BosUtil.sendBosRequest(ak,sk,endpoint,bucketName);
-            //LitePal.getDatabase();//最简单的一次数据库操作，以便数据库产生，但其实放在这里没有什么作用
-            subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
-            if (subjectList.size()>0){
-                dataList.clear();
-                for (Subject subject:subjectList){
-                    dataList.add(subject.getSubjectName());
-                }
-                adapter.notifyDataSetChanged();
-                listView.setSelection(0);
-            }
+
         }
 
     }
