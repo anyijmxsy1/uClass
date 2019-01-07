@@ -1,5 +1,6 @@
 package com.samon.administrator.uclass;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -86,8 +87,33 @@ public class ChooseAreaFragment extends Fragment {
                     queryCourses();
                 }else  if (currentLevel == LEVEL_COURSE){
                     selectedCourse = courseList.get(position);
-                    titleText.setText(selectedCourse.getCourseName());
-                    backButton.setVisibility(View.VISIBLE);
+//                    titleText.setText(selectedCourse.getCourseName());
+//                    backButton.setVisibility(View.VISIBLE);
+                    String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
+                    if (getActivity() instanceof MainActivity){
+                        Intent intent = new Intent(getActivity(),ChapterActivity.class);
+                        intent.putExtra("selectedCourseName",selectedCourseName);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }else if (getActivity() instanceof ChapterActivity){
+                        ChapterActivity activity = (ChapterActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                selectedCourse = courseList.get(position);
+                                String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
+                                Intent intent = new Intent(getActivity(),ChapterActivity.class);
+                                intent.putExtra("selectedCourseName",selectedCourseName);
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+
+                        //activity.swipeRefreshLayout.setRefreshing(true);
+
+                    }
+
                 }
             }
         });
