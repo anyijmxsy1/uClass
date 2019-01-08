@@ -98,18 +98,17 @@ public class ChooseAreaFragment extends Fragment {
                     }else if (getActivity() instanceof ChapterActivity){
                         ChapterActivity activity = (ChapterActivity) getActivity();
                         activity.drawerLayout.closeDrawers();
-                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                                selectedCourse = courseList.get(position);
-                                String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
-                                Intent intent = new Intent(getActivity(),ChapterActivity.class);
-                                intent.putExtra("selectedCourseName",selectedCourseName);
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
-
+//                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                            @Override
+//                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                                selectedCourse = courseList.get(position);
+//                                String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
+//                                Intent intent = new Intent(getActivity(),ChapterActivity.class);
+//                                intent.putExtra("selectedCourseName",selectedCourseName);
+//                                startActivity(intent);
+//                                getActivity().finish();
+//                            }
+//                        });
                         //activity.swipeRefreshLayout.setRefreshing(true);
 
                     }
