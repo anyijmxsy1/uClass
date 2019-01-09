@@ -13,7 +13,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ashokvarma.bottomnavigation.BottomNavigationBar;
+import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.baidubce.auth.DefaultBceCredentials;
 import com.baidubce.services.bos.BosClient;
 import com.baidubce.services.bos.BosClientConfiguration;
@@ -48,6 +51,39 @@ public class MainActivity extends AppCompatActivity {
          */
         TextView courseContentText = (TextView) findViewById(R.id.course_content_text);
         courseContentText.setText("微课内容");
+
+        /*
+        底部导航区的操作
+         */
+        BottomNavigationBar bottomNavigationBar = (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar);
+
+        bottomNavigationBar
+                .addItem(new BottomNavigationItem(R.drawable.find, "发现"))
+                .addItem(new BottomNavigationItem(R.drawable.course, "课程"))
+                .addItem(new BottomNavigationItem(R.drawable.personal, "我的"))
+                .initialise();//所有的设置需在调用该方法前完成
+        bottomNavigationBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener(){
+            @Override
+            public void onTabSelected(int position) {
+                //未选中->选中
+                if (position == 0){
+                    Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
+                }else if (position == 1){
+                    Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
+                }else if (position ==2){
+                    Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onTabUnselected(int position) {
+                //选中->未选中
+            }
+            @Override
+            public void onTabReselected(int position) {
+                //选中->选中
+            }
+         });
+
 
     }
 
