@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationBar bottomNavigationBar = (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar);
 
         bottomNavigationBar
+                 .setInActiveColor("#929292") // 未选中状态颜色
                 .addItem(new BottomNavigationItem(R.drawable.find, "发现"))
                 .addItem(new BottomNavigationItem(R.drawable.course, "课程"))
                 .addItem(new BottomNavigationItem(R.drawable.personal, "我的"))
