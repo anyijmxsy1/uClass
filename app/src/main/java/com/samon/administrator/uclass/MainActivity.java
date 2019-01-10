@@ -1,5 +1,6 @@
 package com.samon.administrator.uclass;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
@@ -7,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Display;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,8 +51,16 @@ public class MainActivity extends AppCompatActivity {
         /*
         内容区的操作
          */
-        TextView courseContentText = (TextView) findViewById(R.id.course_content_text);
-        courseContentText.setText("微课内容");
+//        TextView courseContentText = (TextView) findViewById(R.id.course_content_text);
+//        courseContentText.setText("微课内容");
+//        Display display = getWindowManager().getDefaultDisplay();
+//        if (display.getWidth() > display.getHeight()) {
+//            ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
+//            getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, chooseAreaFragment).commit();
+//        } else {
+//            ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
+//            getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, chooseAreaFragment).commit();
+//        }
 
         /*
         底部导航区的操作
@@ -69,8 +79,12 @@ public class MainActivity extends AppCompatActivity {
                 //未选中->选中
                 if (position == 0){
                     Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this,Secondctivity.class);
+                    startActivity(intent);
+
                 }else if (position == 1){
-                    Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
+                    ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, chooseAreaFragment).commit();
                 }else if (position ==2){
                     Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
                 }
