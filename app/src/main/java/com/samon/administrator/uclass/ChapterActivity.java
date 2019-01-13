@@ -35,7 +35,7 @@ public class ChapterActivity extends AppCompatActivity {
         String videoUrl2 = "https://geiliweike.bj.bcebos.com/七年级数学/数学初中1上__第1章第1课·正数和负数.rmvb" ;
         String videoUrl1= intent.getStringExtra("selectedCourseName");
         String videoUrl3=videoUrl1.substring(32);
-        Log.d("xsy6", "onCreate: "+videoUrl3);
+        //Log.d("xsy6", "onCreate: "+videoUrl3);
         Uri uri = Uri.parse( videoUrl1 );
 
         videoView = (VideoView)this.findViewById(R.id.mVideoView );
@@ -48,7 +48,11 @@ public class ChapterActivity extends AppCompatActivity {
         chapterbackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                drawerLayout.openDrawer(GravityCompat.START);
+                //drawerLayout.openDrawer(GravityCompat.START);
+                Intent intent = new Intent(ChapterActivity.this,Secondctivity.class);
+                startActivity(intent);
+                finish();
+
             }
         });
 

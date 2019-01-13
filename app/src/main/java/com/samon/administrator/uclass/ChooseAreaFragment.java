@@ -49,7 +49,8 @@ public class ChooseAreaFragment extends Fragment {
 
     private TextView titleText;
     private Button backButton;
-    private ListView listView;
+    //NestedListView为自定义的继承ListView的类，是为了避免listView只显示的问题
+    private NestedListView listView;
     private ArrayAdapter<String> adapter;
     private List<String> dataList = new ArrayList<>();
 
@@ -125,7 +126,14 @@ public class ChooseAreaFragment extends Fragment {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                querySubjects();
+                if (currentLevel == LEVEL_SUBJECT){
+                    Intent intent = new Intent(getContext(),MainActivity.class);
+                    startActivity(intent);
+                    getActivity().finish();
+                }else  if (currentLevel == LEVEL_COURSE){
+                    querySubjects();
+
+                }
             }
         });
 
@@ -160,7 +168,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void querySubjects() {
         titleText.setText("科目");
-        backButton.setVisibility(View.GONE);
+        backButton.setVisibility(View.VISIBLE);
         //DataSupport.deleteAll(Subject.class);
         subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
         Log.d("xsy1", "querySubjects: "+subjectList.size());

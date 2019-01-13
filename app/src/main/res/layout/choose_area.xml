@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/choose_area_linearlayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
@@ -29,7 +30,7 @@
             android:background="@drawable/ic_back"/>
     </RelativeLayout>
 
-    <ListView
+    <com.samon.administrator.uclass.NestedListView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/list_view" />
