@@ -1,6 +1,7 @@
 package com.samon.administrator.uclass;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,7 +69,7 @@ public class ChooseAreaFragment extends Fragment {
         titleText = view.findViewById(R.id.title_text);
         backButton = view.findViewById(R.id.back_button);
         listView = view.findViewById(R.id.list_view);
-        adapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
+        adapter = new ArrayAdapter<>(getContext(),R.layout.array_adapter,dataList);
         listView.setAdapter(adapter);
         return view;
 
@@ -90,14 +92,14 @@ public class ChooseAreaFragment extends Fragment {
 //                    titleText.setText(selectedCourse.getCourseName());
 //                    backButton.setVisibility(View.VISIBLE);
                     String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
-                    if (getActivity() instanceof MainActivity){
+//                    if (getActivity() instanceof MainActivity){
                         Intent intent = new Intent(getActivity(),ChapterActivity.class);
                         intent.putExtra("selectedCourseName",selectedCourseName);
                         startActivity(intent);
                         getActivity().finish();
-                    }else if (getActivity() instanceof ChapterActivity){
-                        ChapterActivity activity = (ChapterActivity) getActivity();
-                        activity.drawerLayout.closeDrawers();
+//                  }else if (getActivity() instanceof ChapterActivity){
+//                        ChapterActivity activity = (ChapterActivity) getActivity();
+//                        activity.drawerLayout.closeDrawers();
 //                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 //                            @Override
 //                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -111,7 +113,7 @@ public class ChooseAreaFragment extends Fragment {
 //                        });
                         //activity.swipeRefreshLayout.setRefreshing(true);
 
-                    }
+//                    }
 
                 }
             }

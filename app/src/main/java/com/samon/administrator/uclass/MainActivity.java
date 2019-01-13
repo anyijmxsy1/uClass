@@ -81,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "内容"+position, Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(MainActivity.this,Secondctivity.class);
                     startActivity(intent);
-
                 }else if (position == 1){
                     ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
                     getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, chooseAreaFragment).commit();
