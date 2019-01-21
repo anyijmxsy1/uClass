@@ -19,7 +19,7 @@ import com.samon.administrator.uclass.util.MD5Utils;
 public class RegisterActivity extends AppCompatActivity {
 
     private TextView tv_main_title;//标题
-    private TextView tv_back;//返回按钮
+    private Button tv_back;//返回按钮
     private Button btn_register;//注册按钮
     //用户名，密码，再次输入的密码的控件
     private EditText et_user_name,et_psw,et_psw_again;
@@ -42,10 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
         tv_main_title=findViewById(R.id.personal_tv_main_title);
         tv_main_title.setText("注册");
         tv_back=findViewById(R.id.personal_back_button);
-        //布局根元素
-        rl_title_bar=findViewById(R.id.collapsing_toolbar);
-        rl_title_bar.setBackgroundColor(Color.TRANSPARENT);
-        //从activity_register.xml 页面中获取对应的UI控件
+//        //布局根元素
+        //rl_title_bar=findViewById(R.id.collapsing_toolbar);
+//        rl_title_bar.setBackgroundColor(Color.TRANSPARENT);
+//        //从activity_register.xml 页面中获取对应的UI控件
         btn_register=findViewById(R.id.btn_register);
         et_user_name=findViewById(R.id.et_user_name);
         et_psw=findViewById(R.id.et_psw);
@@ -100,7 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
-    }
+   }
     /**
      * 获取控件中的字符串
      */

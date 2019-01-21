@@ -84,6 +84,7 @@ public class LoginActivity extends AppCompatActivity  {
                 //为了跳转到注册界面，并实现注册功能
                 Intent intent=new Intent(LoginActivity.this,RegisterActivity.class);
                 startActivityForResult(intent, 1);
+                //startActivity(intent);
             }
         });
         //找回密码控件的点击事件
@@ -98,7 +99,7 @@ public class LoginActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 //开始登录，获取用户名和密码 getText().toString().trim();
-                userName=et_user_name.getText().toString().trim();
+                userName=et_user_name.getText().toString().trim();//trim()去掉字符串头尾空白符
                 psw=et_psw.getText().toString().trim();
                 //对当前用户输入的密码进行MD5加密再进行比对判断, MD5Utils.md5( ); psw 进行加密判断是否一致
                 String md5Psw= MD5Utils.md5(psw);

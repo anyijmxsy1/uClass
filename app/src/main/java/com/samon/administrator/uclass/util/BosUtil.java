@@ -45,11 +45,6 @@ public class BosUtil {
                 }
             }
         }).start();
-
-
-
-
-
     }
 
     /*
@@ -78,7 +73,34 @@ public class BosUtil {
             }
         }).start();
     }
+    /*
+    从服务器中读取部分数据，筛选条件是以size的大小为0的目录，存入本地数据库
+     */
+    public static void pushUsernameToBos(String AccessKeyID,String SecretAccessKey,String EndPoint,final String bucketName){
+        BosClientConfiguration config = new BosClientConfiguration();
+        config.setCredentials(new DefaultBceCredentials(AccessKeyID, SecretAccessKey));   //您的AK/SK
+        config.setEndpoint(EndPoint);    //传入Bucket所在区域域名
+        final BosClient client = new BosClient(config);
 
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ListObjectsResponse listing = client.listObjects(bucketName);
+                for (BosObjectSummary objectSummary : listing.getContents()) {
+                    if (objectSummary.getSize()==0){
+                        int i = 0;
+                        Subject subject = new Subject();
+                        subject.setSubjectName(objectSummary.getKey());
+                        subject.setSize(objectSummary.getSize());
+                        subject.setId(i);
+                        subject.save();//存入数据库
+                        i++;
+                        Log.d("xsy4", "sendBosRequest: "+subject.getSubjectName()+"id"+subject.getId());
+                    }
+                }
+            }
+        }).start();
+    }
 
 
 }
