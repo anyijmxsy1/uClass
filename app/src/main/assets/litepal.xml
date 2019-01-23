@@ -1,10 +1,11 @@
 <litepal>
 
     <dbname value="u_class"/>
-    <version value="5"/>
+    <version value="6"/>
 
     <list>
         <mapping class="com.samon.administrator.uclass.db.Subject"/>
         <mapping class="com.samon.administrator.uclass.db.Course" />
+        <mapping class="com.samon.administrator.uclass.db.User" />
     </list>
 </litepal>

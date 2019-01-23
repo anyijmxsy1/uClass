@@ -23,14 +23,13 @@ public class FirstAreaFragment extends Fragment {
 首页显示的课程名和图片资源
  */
     private Course[] courses = {
-            new Course("math",R.drawable.math),
-            new Course("physical",R.drawable.physical),
-            new Course("math",R.drawable.math),
-            new Course("physical",R.drawable.physical),
-            new Course("math",R.drawable.math),
-            new Course("physical",R.drawable.physical),
-            new Course("math",R.drawable.math),
-            new Course("physical",R.drawable.physical)};
+            new Course("语文",R.drawable.chinese),
+            new Course("数学",R.drawable.math),
+            new Course("英语",R.drawable.english),
+            new Course("物理",R.drawable.physical),
+            new Course("化学",R.drawable.chemical),
+            new Course("思品",R.drawable.politics),
+            new Course("历史",R.drawable.history)};
     private List<Course> courseList = new ArrayList<>();
     private CourseAdapter adapter;
 

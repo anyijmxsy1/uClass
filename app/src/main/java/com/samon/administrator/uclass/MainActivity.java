@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationBar bottomNavigationBar = (BottomNavigationBar) findViewById(R.id.bottom_navigation_bar);
         bottomNavigationBar
                 .setInActiveColor("#929292") // 未选中状态颜色
-                .addItem(new BottomNavigationItem(R.drawable.find, "发现"))
+                .addItem(new BottomNavigationItem(R.drawable.find, "练习"))
                 .addItem(new BottomNavigationItem(R.drawable.course, "课程"))
                 .addItem(new BottomNavigationItem(R.drawable.personal, "我的"))
                 .setFirstSelectedPosition(lastSelectedPosition)
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                 } else if (position == 1) {
 
                 } else if (position == 2) {
-                    Toast.makeText(MainActivity.this, "内容" + position, Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivity.this, "内容" + position, Toast.LENGTH_SHORT).show();
                 }
             }
 

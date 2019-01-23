@@ -14,9 +14,19 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samon.administrator.uclass.util.BosUtil;
 import com.samon.administrator.uclass.util.MD5Utils;
 
+import java.io.File;
+
 public class RegisterActivity extends AppCompatActivity {
+
+    private String endpoint = "http://bj.bcebos.com";
+    private String ak = "EEdfea963ed6544446235cc168976715";
+    private String sk = "5d1246f907a0a81cba98c06d72d9ac78";
+    private String bucketName = "uclassuser";
+    private String path = "/data/data/com.samon.administrator.uclass/shared_prefs/loginInfo.xml";
+    private String fileName = "loginInfo.xml";
 
     private TextView tv_main_title;//标题
     private Button tv_back;//返回按钮
@@ -89,8 +99,10 @@ public class RegisterActivity extends AppCompatActivity {
                      * 保存账号和密码到SharedPreferences中
                      */
                     saveRegisterInfo(userName, psw);
+                    //Toast.makeText(, "账号"+userName+",密码"+psw, Toast.LENGTH_SHORT).show();
                     //注册成功后把账号传递到LoginActivity.java中
                     // 返回值到loginActivity显示
+                    BosUtil.BosClientPushUser(ak,sk,endpoint,bucketName,path,fileName);
                     Intent data = new Intent();
                     data.putExtra("userName", userName);
                     setResult(RESULT_OK, data);
@@ -106,6 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
      */
     private void getEditString(){
         userName=et_user_name.getText().toString().trim();
+        //BosUtil.pushUsernameToBos(ak,sk,endpoint,bucketName,objectskey,userName);
         psw=et_psw.getText().toString().trim();
         pswAgain=et_psw_again.getText().toString().trim();
     }
@@ -116,7 +129,8 @@ public class RegisterActivity extends AppCompatActivity {
         boolean has_userName=false;
         //mode_private SharedPreferences sp = getSharedPreferences( );
         // "loginInfo", MODE_PRIVATE
-        SharedPreferences sp=getSharedPreferences("loginInfo", MODE_PRIVATE);
+        SharedPreferences sp=getSharedPreferences("userdata", MODE_PRIVATE);
+        //BosUtil.BosClientLoadUser(ak,sk,endpoint,bucketName,path,"userdata");
         //获取密码
         String spPsw=sp.getString(userName, "");//传入用户名获取密码
         //如果密码不为空则确实保存过这个用户名
@@ -138,6 +152,7 @@ public class RegisterActivity extends AppCompatActivity {
         //key,value,如键值对，editor.putString(用户名，密码）;
         editor.putString(userName, md5Psw);
         //提交修改 editor.commit();
-        editor.commit();
+        //editor.commit();
+        editor.apply();
     }
 }
