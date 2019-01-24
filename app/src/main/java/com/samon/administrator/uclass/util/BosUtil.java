@@ -53,7 +53,7 @@ public class BosUtil {
                         subject.setId(i);
                         subject.save();//存入数据库
                         i++;
-                        Log.d("xsy4", "sendBosRequest: "+subject.getSubjectName()+"id"+subject.getId());
+                        Log.d("xsysendSubjectRequestToBos", "sendBosRequest: "+subject.getSubjectName()+"id"+subject.getId());
                     }
                 }
             }
@@ -80,7 +80,7 @@ public class BosUtil {
                         course.setCourseSize(objectSummary.getSize());
                         course.setCourseId(selectedSubject.getId());
                         course.save();
-                        Log.d("xsy5", "run: "+course.getCourseName()+"id"+course.getCourseId());
+                        Log.d("xsysendCourseRequestToBos", "run: "+course.getCourseName()+"id"+course.getCourseId());
                     }
                 }
             }
@@ -99,7 +99,6 @@ public class BosUtil {
 
             @Override
             public void run() {
-
                 try {
 //                    //创建Bucket
 //                    String newbucketName="uclassuser";
@@ -110,14 +109,16 @@ public class BosUtil {
                     //上传Object
                     File file = new File(path);//上传文件的目录
                     PutObjectResponse putObjectFromFileResponse = client.putObject(bucketName, fileName, file);
-//                    Log.d("xsy4",putObjectFromFileResponse.getETag());
+                    Log.d("xsyBosClientPushUser",putObjectFromFileResponse.getETag());
+//                    PutObjectResponse putObjectResponseFromString = client.putObject(bucketName, fileName, "xsy");
+//                    Log.d("xsy4",putObjectResponseFromString.getETag());
 
                     //查看Object
                     ListObjectsResponse list = client.listObjects(bucketName);
                     for (BosObjectSummary objectSummary : list.getContents()) {
-                        Log.d("xsy","ObjectKey: "+ objectSummary.getKey());
+                        Log.d("xsyBosClientPushUser","ObjectKey: "+ objectSummary.getKey());
                     }
-
+                    //查看指定服务器上指定文件名的object，并下载到本地指定文件名的文件中
                     // 获取Object
                     BosObject object = client.getObject(bucketName, fileName);
                     // 获取ObjectMeta
@@ -125,17 +126,16 @@ public class BosUtil {
                     // 获取Object的输入流
                     InputStream objectContent = object.getObjectContent();
                     // 处理Object
-                    FileOutputStream fos=new FileOutputStream("/data/data/com.samon.administrator.uclass/shared_prefs/userdata.xml");//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
+                    FileOutputStream fos=new FileOutputStream("/data/data/com.samon.administrator.uclass/shared_prefs/loginInfo.xml");//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
                     byte[] buffer=new byte[2048];
                     int count=0;
                     while ((count=objectContent.read(buffer))>=0) {
                         fos.write(buffer,0,count);
                     }
-
                     // 关闭流
                     objectContent.close();
                     fos.close();
-                    Log.d("xsy",meta.getETag());
+                    Log.d("xsyBosClientPushUser",meta.getETag());
 //                    Log.d("xsy",meta.getContentLength());
 
                 }catch (BceServiceException e) {
@@ -173,7 +173,7 @@ public class BosUtil {
                     //查看Object
                     ListObjectsResponse list = client.listObjects(bucketName);
                     for (BosObjectSummary objectSummary : list.getContents()) {
-                        Log.d("xsy","ObjectKey: "+ objectSummary.getKey());
+                        Log.d("xsyBosClientLoadUser","ObjectKey: "+ objectSummary.getKey());
                     }
 
                     // 获取Object
@@ -183,7 +183,7 @@ public class BosUtil {
                     // 获取Object的输入流
                     InputStream objectContent = object.getObjectContent();
                     // 处理Object
-                    FileOutputStream fos=new FileOutputStream("/data/data/com.samon.administrator.uclass/shared_prefs/userdata.xml");//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
+                    FileOutputStream fos=new FileOutputStream("/data/data/com.samon.administrator.uclass/shared_prefs/loginInfo.xml");//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
                     byte[] buffer=new byte[2048];
                     int count=0;
                     while ((count=objectContent.read(buffer))>=0) {
@@ -193,7 +193,7 @@ public class BosUtil {
                     // 关闭流
                     objectContent.close();
                     fos.close();
-                    Log.d("xsy",meta.getETag());
+                    Log.d("xsyBosClientLoadUser",meta.getETag());
 //                    Log.d("xsy",meta.getContentLength());
 
                 }catch (BceServiceException e) {
