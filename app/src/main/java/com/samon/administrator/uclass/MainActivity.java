@@ -1,6 +1,7 @@
 package com.samon.administrator.uclass;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
@@ -33,9 +34,6 @@ public class MainActivity extends AppCompatActivity {
 
     private int lastSelectedPosition = 0;
 
-
-
-
     @Override
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,20 +52,6 @@ public class MainActivity extends AppCompatActivity {
         }
         Glide.with(this).load(R.drawable.banner2).into(imageView);
         collapsingToolbar.setTitle(" ");
-
-        /*
-        内容区的操作
-         */
-//        TextView courseContentText = (TextView) findViewById(R.id.course_content_text);
-//        courseContentText.setText("微课内容");
-//        Display display = getWindowManager().getDefaultDisplay();
-//        if (display.getWidth() > display.getHeight()) {
-//            ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
-//            getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, chooseAreaFragment).commit();
-//        } else {
-//            ChooseAreaFragment chooseAreaFragment = new ChooseAreaFragment();
-//            getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, chooseAreaFragment).commit();
-//        }
 
         /*
         底部导航区的操作
@@ -99,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             }
-
             @Override
             public void onTabUnselected(int position) {
                 //选中->未选中//上一次选中的item
@@ -119,18 +102,16 @@ public class MainActivity extends AppCompatActivity {
         });
         //加载默认的碎片
         setDefaultFragment();
-
     }
 
     /*
-    默认加载的碎片
+    在内容区加载的默认碎片
      */
     private void setDefaultFragment() {
         FirstAreaFragment firstAreaFragment = new FirstAreaFragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.main_linearLayout, firstAreaFragment).commit();
 
     }
-
     //标题栏中的返回键的响应
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

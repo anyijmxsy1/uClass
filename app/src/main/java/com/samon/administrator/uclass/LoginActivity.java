@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +34,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.samon.administrator.uclass.util.BosUtil;
 import com.samon.administrator.uclass.util.MD5Utils;
 
 import java.util.ArrayList;
@@ -49,6 +51,14 @@ public class LoginActivity extends AppCompatActivity  {
     private Button tv_back,btn_login;//登录按钮
     private String userName,psw,spPsw;//获取的用户名，密码，加密密码
     private EditText et_user_name,et_psw;//编辑框
+
+    private String endpoint = "http://bj.bcebos.com";
+    private String ak = "EEdfea963ed6544446235cc168976715";
+    private String sk = "5d1246f907a0a81cba98c06d72d9ac78";
+    private String bucketName = "uclassuser";
+    private String path = "/data/data/com.samon.administrator.uclass/shared_prefs/loginInfo.xml";
+    private String fileName = "loginInfo.xml";
+
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -69,6 +79,7 @@ public class LoginActivity extends AppCompatActivity  {
         btn_login=findViewById(R.id.btn_login);
         et_user_name=findViewById(R.id.et_user_name);
         et_psw=findViewById(R.id.et_psw);
+
         //返回键的点击事件
         tv_back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +88,7 @@ public class LoginActivity extends AppCompatActivity  {
                 LoginActivity.this.finish();
             }
         });
-        //立即注册控件的点击事件
+        //注册控件的点击事件
         tv_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,15 +109,14 @@ public class LoginActivity extends AppCompatActivity  {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //开始登录，获取用户名和密码 getText().toString().trim();
+                //获取用户名和密码 getText().toString().trim();
                 userName=et_user_name.getText().toString().trim();//trim()去掉字符串头尾空白符
                 psw=et_psw.getText().toString().trim();
                 //对当前用户输入的密码进行MD5加密再进行比对判断, MD5Utils.md5( ); psw 进行加密判断是否一致
-                String md5Psw= MD5Utils.md5(psw);
+                //String md5Psw= MD5Utils.md5(psw);
                 // md5Psw ; spPsw 为 根据从SharedPreferences中用户名读取密码
                 // 定义方法 readPsw为了读取用户名，得到密码
                 spPsw=readPsw(userName);
-                // TextUtils.isEmpty
                 if(TextUtils.isEmpty(userName)){
                     Toast.makeText(LoginActivity.this, "请输入用户名", Toast.LENGTH_SHORT).show();
                     return;
@@ -114,7 +124,10 @@ public class LoginActivity extends AppCompatActivity  {
                     Toast.makeText(LoginActivity.this, "请输入密码", Toast.LENGTH_SHORT).show();
                     return;
                     // md5Psw.equals(); 判断，输入的密码加密后，是否与保存在SharedPreferences中一致
-                }else if(md5Psw.equals(spPsw)){
+                }else if((spPsw!=null&&!TextUtils.isEmpty(spPsw)&&!psw.equals(spPsw))){
+                    Toast.makeText(LoginActivity.this, "输入的用户名和密码不一致", Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(psw.equals(spPsw)){
                     //一致登录成功
                     Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                     //保存登录状态，在界面保存登录的用户名 定义个方法 saveLoginStatus boolean 状态 , userName 用户名;
@@ -131,9 +144,6 @@ public class LoginActivity extends AppCompatActivity  {
                     //跳转到主界面，登录成功的状态传递到 MainActivity 中
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     return;
-                }else if((spPsw!=null&&!TextUtils.isEmpty(spPsw)&&!md5Psw.equals(spPsw))){
-                    Toast.makeText(LoginActivity.this, "输入的用户名和密码不一致", Toast.LENGTH_SHORT).show();
-                    return;
                 }else{
                     Toast.makeText(LoginActivity.this, "此用户名不存在", Toast.LENGTH_SHORT).show();
                 }
@@ -141,11 +151,14 @@ public class LoginActivity extends AppCompatActivity  {
         });
     }
     /**
-     *从SharedPreferences中根据用户名读取密码
+     *先从文本输入框中读取用户名username，再从服务上下载存储了用户名的文件，再存入本地指定文件中，最后从SharedPreferences中根据用户名读取密码
      */
     private String readPsw(String userName){
         //getSharedPreferences("loginInfo",MODE_PRIVATE);
         //"loginInfo",mode_private; MODE_PRIVATE表示可以继续写入
+//        SharedPreferences.Editor editor=getSharedPreferences("loginInfo", MODE_PRIVATE).edit();
+//        editor.apply();
+        BosUtil.BosClientLoadUser(ak,sk,endpoint,bucketName,fileName,path);
         SharedPreferences sp=getSharedPreferences("loginInfo", MODE_PRIVATE);
         //sp.getString() userName, "";
         return sp.getString(userName , "");

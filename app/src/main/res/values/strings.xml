@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">uClass</string>
+    <string name="app_name">给力微课程</string>
     <string name="title_activity_login">Sign in</string>
     <!-- Strings related to login -->
     <string name="prompt_email">邮箱</string>

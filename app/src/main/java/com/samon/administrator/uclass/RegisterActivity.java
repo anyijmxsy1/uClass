@@ -94,15 +94,13 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }else{
                     Toast.makeText(RegisterActivity.this, "注册成功", Toast.LENGTH_SHORT).show();
-                    //把账号、密码和账号标识保存到sp里面
-                    /**
-                     * 保存账号和密码到SharedPreferences中
-                     */
+                    //把账号、密码和账号标识保存到SharedPreferences里面
                     saveRegisterInfo(userName, psw);
                     //Toast.makeText(, "账号"+userName+",密码"+psw, Toast.LENGTH_SHORT).show();
+                    //将账号和密码上传到服务器上
+                    BosUtil.BosClientPushUser(ak,sk,endpoint,bucketName,path,fileName);
                     //注册成功后把账号传递到LoginActivity.java中
                     // 返回值到loginActivity显示
-                    BosUtil.BosClientPushUser(ak,sk,endpoint,bucketName,path,fileName);
                     Intent data = new Intent();
                     data.putExtra("userName", userName);
                     setResult(RESULT_OK, data);
@@ -129,7 +127,7 @@ public class RegisterActivity extends AppCompatActivity {
         boolean has_userName=false;
         //mode_private SharedPreferences sp = getSharedPreferences( );
         // "loginInfo", MODE_PRIVATE
-        SharedPreferences sp=getSharedPreferences("userdata", MODE_PRIVATE);
+        SharedPreferences sp=getSharedPreferences("loginInfo", MODE_PRIVATE);
         //BosUtil.BosClientLoadUser(ak,sk,endpoint,bucketName,path,"userdata");
         //获取密码
         String spPsw=sp.getString(userName, "");//传入用户名获取密码
@@ -143,14 +141,14 @@ public class RegisterActivity extends AppCompatActivity {
      * 保存账号和密码到SharedPreferences中SharedPreferences
      */
     private void saveRegisterInfo(String userName,String psw){
-        String md5Psw = MD5Utils.md5(psw);//把密码用MD5加密
+        //String md5Psw = MD5Utils.md5(psw);//把密码用MD5加密
         //loginInfo表示文件名, mode_private SharedPreferences sp = getSharedPreferences( );
         SharedPreferences sp=getSharedPreferences("loginInfo", MODE_PRIVATE);
         //获取编辑器， SharedPreferences.Editor  editor -> sp.edit();
         SharedPreferences.Editor editor=sp.edit();
         //以用户名为key，密码为value保存在SharedPreferences中
         //key,value,如键值对，editor.putString(用户名，密码）;
-        editor.putString(userName, md5Psw);
+        editor.putString(userName, psw);
         //提交修改 editor.commit();
         //editor.commit();
         editor.apply();

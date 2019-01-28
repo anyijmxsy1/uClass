@@ -106,37 +106,9 @@ public class BosUtil {
 //                    CreateBucketResponse response = client.createBucket(newbucketName); //新建一个Bucket并指定Bucket名称
 //                    Log.d("xsy4",response.getLocation());
 //                    Log.d("xsy4",response.getName());
-
                     //上传Object
                     File file = new File(path);//上传文件的目录
                     PutObjectResponse putObjectFromFileResponse = client.putObject(bucketName, fileName, file);
-//                    Log.d("xsy4",putObjectFromFileResponse.getETag());
-
-                    //查看Object
-                    ListObjectsResponse list = client.listObjects(bucketName);
-                    for (BosObjectSummary objectSummary : list.getContents()) {
-                        Log.d("xsy","ObjectKey: "+ objectSummary.getKey());
-                    }
-
-                    // 获取Object
-                    BosObject object = client.getObject(bucketName, fileName);
-                    // 获取ObjectMeta
-                    ObjectMetadata meta = object.getObjectMetadata();
-                    // 获取Object的输入流
-                    InputStream objectContent = object.getObjectContent();
-                    // 处理Object
-                    FileOutputStream fos=new FileOutputStream("/data/data/com.samon.administrator.uclass/shared_prefs/userdata.xml");//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
-                    byte[] buffer=new byte[2048];
-                    int count=0;
-                    while ((count=objectContent.read(buffer))>=0) {
-                        fos.write(buffer,0,count);
-                    }
-
-                    // 关闭流
-                    objectContent.close();
-                    fos.close();
-                    Log.d("xsy",meta.getETag());
-//                    Log.d("xsy",meta.getContentLength());
 
                 }catch (BceServiceException e) {
                     System.out.println("Error ErrorCode: " + e.getErrorCode());
@@ -146,9 +118,6 @@ public class BosUtil {
                     System.out.println("Error ErrorType: " + e.getErrorType());
                 } catch (BceClientException e) {
                     System.out.println("Error Message: " + e.getMessage());
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
             }
         }).start();
@@ -158,7 +127,7 @@ public class BosUtil {
     /*
     将服务器上的用户名和密码下载到本地
      */
-    public static void BosClientLoadUser(String ak, String sk, String endPoint, final String bucketName,final String path,final String fileName){
+    public static void BosClientLoadUser(String ak, String sk, String endPoint, final String bucketName,final String fileName,final String path){
         BosClientConfiguration config = new BosClientConfiguration();
         config.setCredentials(new DefaultBceCredentials(ak, sk));
         config.setEndpoint(endPoint); //Bucket所在区域
@@ -168,14 +137,7 @@ public class BosUtil {
 
             @Override
             public void run() {
-
                 try {
-                    //查看Object
-                    ListObjectsResponse list = client.listObjects(bucketName);
-                    for (BosObjectSummary objectSummary : list.getContents()) {
-                        Log.d("xsy","ObjectKey: "+ objectSummary.getKey());
-                    }
-
                     // 获取Object
                     BosObject object = client.getObject(bucketName, fileName);
                     // 获取ObjectMeta
@@ -183,19 +145,16 @@ public class BosUtil {
                     // 获取Object的输入流
                     InputStream objectContent = object.getObjectContent();
                     // 处理Object
-                    FileOutputStream fos=new FileOutputStream("/data/data/com.samon.administrator.uclass/shared_prefs/userdata.xml");//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
+                    FileOutputStream fos=new FileOutputStream(path);//下载文件的目录/文件名,FileOutputStrea把数据写入本地文件
                     byte[] buffer=new byte[2048];
                     int count=0;
                     while ((count=objectContent.read(buffer))>=0) {
                         fos.write(buffer,0,count);
                     }
-
                     // 关闭流
                     objectContent.close();
                     fos.close();
-                    Log.d("xsy",meta.getETag());
-//                    Log.d("xsy",meta.getContentLength());
-
+                    Log.d("xsyBosClientLoadUser",meta.getETag());
                 }catch (BceServiceException e) {
                     System.out.println("Error ErrorCode: " + e.getErrorCode());
                     System.out.println("Error RequestId: " + e.getRequestId());
