@@ -141,6 +141,7 @@ public class ChooseAreaFragment extends Fragment {
         第一次运行碎片时要运行的方法
          */
         querySubjects();
+        querySubjects();
 
     }
     /*

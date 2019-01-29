@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.samon.administrator.uclass.Course;
 import com.samon.administrator.uclass.R;
+import com.samon.administrator.uclass.WebWiewActivity;
 
 import java.util.List;
 
@@ -57,9 +58,12 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
                 int position = holder.getAdapterPosition();
                 Course course = mCourseList.get(position);
                 //Toast.makeText(v.getContext(), "you clicke view "+course.getName()+position, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setData(Uri.parse("http://www.geiliweike.com/content/%E7%89%A9%E7%90%86%E9%A2%98%E5%BA%93%EF%BC%88%E6%8F%90%E9%AB%98%E5%9E%8B%EF%BC%89"));
-                        mContext.startActivity(intent);
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                        intent.setData(Uri.parse("http://www.geiliweike.com/content/%E7%89%A9%E7%90%86%E9%A2%98%E5%BA%93%EF%BC%88%E6%8F%90%E9%AB%98%E5%9E%8B%EF%BC%89"));
+//                        mContext.startActivity(intent);
+                Intent intent = new Intent(mContext,WebWiewActivity.class);
+                intent.putExtra("courseName",course.getName());
+                mContext.startActivity(intent);
             }
         });
         holder.courseImage.setOnClickListener(new View.OnClickListener(){
@@ -68,8 +72,11 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.ViewHolder
                 int position = holder.getAdapterPosition();
                 Course course = mCourseList.get(position);
                 //Toast.makeText(v.getContext(), "you clicke view "+course.getName(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("http://www.geiliweike.com/content/%E9%A2%98%E5%BA%93#overlay-context=content/%25E9%25A2%2598%25E5%25BA%2593"));
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse("http://www.geiliweike.com/content/%E9%A2%98%E5%BA%93#overlay-context=content/%25E9%25A2%2598%25E5%25BA%2593"));
+//                mContext.startActivity(intent);
+                Intent intent = new Intent(mContext,WebWiewActivity.class);
+                intent.putExtra("courseName",course.getName());
                 mContext.startActivity(intent);
             }
         });
