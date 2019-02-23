@@ -75,7 +75,6 @@ public class ChooseAreaFragment extends Fragment {
         return view;
 
     }
-
     @Override
     public void onActivityCreated( Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -115,7 +114,6 @@ public class ChooseAreaFragment extends Fragment {
                         //activity.swipeRefreshLayout.setRefreshing(true);
 
 //                    }
-
                 }
             }
         });
@@ -140,7 +138,7 @@ public class ChooseAreaFragment extends Fragment {
         /*
         第一次运行碎片时要运行的方法
          */
-        querySubjects();
+        //querySubjects();
         querySubjects();
 
     }
@@ -172,7 +170,7 @@ public class ChooseAreaFragment extends Fragment {
         backButton.setVisibility(View.VISIBLE);
         //DataSupport.deleteAll(Subject.class);
         subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
-        Log.d("xsy1", "querySubjects: "+subjectList.size());
+        //Log.d("xsy1", "querySubjects: "+subjectList.size());
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
