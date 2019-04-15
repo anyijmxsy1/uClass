@@ -44,11 +44,16 @@ public class BosUtil {
             @Override
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
+                String[] key;
+                int i;
                 for (BosObjectSummary objectSummary : listing.getContents()) {
-                    if (objectSummary.getSize()==0){
-                        int i = 0;
-                        Subject subject = new Subject();
-                        subject.setSubjectName(objectSummary.getKey());
+                    Subject subject = new Subject();
+                    key = objectSummary.getKey().split("\\/");//正刚表达式，以“/"符号将字符串划分为几段字符串，存放在字符串数组key中。
+                    if (key.length==1){
+                    //if (objectSummary.getSize()==0){
+                        i = 0;
+                        subject.setSubjectName(key[0]);
+                        //subject.setSubjectName(objectSummary.getKey());
                         subject.setSize(objectSummary.getSize());
                         subject.setId(i);
                         subject.save();//存入数据库
@@ -73,10 +78,14 @@ public class BosUtil {
             @Override
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
+                String[] key;
                 for (BosObjectSummary objectSummary : listing.getContents()) {
-                    if (objectSummary.getKey().contains(selectedSubject.getSubjectName())){
+                    key = objectSummary.getKey().split("\\/");
+                    if ((key.length==2)&&(objectSummary.getKey().contains(selectedSubject.getSubjectName()))){
+                    //if (objectSummary.getKey().contains(selectedSubject.getSubjectName())){
                         Course course = new Course();
-                        course.setCourseName(objectSummary.getKey());
+                        course.setCourseName(key[1]);
+                        //course.setCourseName(objectSummary.getKey());
                         course.setCourseSize(objectSummary.getSize());
                         course.setCourseId(selectedSubject.getId());
                         course.save();
