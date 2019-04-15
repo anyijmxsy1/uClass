@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import java.util.Timer;
@@ -20,6 +22,9 @@ public class SplashActivity extends AppCompatActivity {
         //设置此界面为
         // 竖屏
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//portrait：竖屏 ， 显示时 高 度大于 宽 度 ；
+        //设置全屏显示欢迎页面
+        hideActionBar();
+        setFullScreen();
         init();
     }
 
@@ -47,5 +52,17 @@ public class SplashActivity extends AppCompatActivity {
         //调度执行timerTask，第二个参数传入延迟时间（毫秒）
         timer.schedule(timerTask,1000);
 
+    }
+
+    //设置全屏显示欢迎页面
+    private void hideActionBar() {
+// Hide UI
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+    }
+    private void setFullScreen() {
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }
