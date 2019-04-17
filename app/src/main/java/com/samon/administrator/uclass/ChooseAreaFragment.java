@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.style.LeadingMarginSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.baidubce.services.bos.BosClient;
 import com.baidubce.services.bos.BosClientConfiguration;
 import com.baidubce.services.bos.model.BosObjectSummary;
 import com.baidubce.services.bos.model.ListObjectsResponse;
+import com.samon.administrator.uclass.db.Chapter;
 import com.samon.administrator.uclass.db.Course;
 import com.samon.administrator.uclass.db.Subject;
 import com.samon.administrator.uclass.util.BosUtil;
@@ -44,6 +46,7 @@ public class ChooseAreaFragment extends Fragment {
 
     public static final int LEVEL_SUBJECT = 0;
     public static final int LEVEL_COURSE= 1;
+    public static final int LEVEL_CHAPTER= 2;
     private int currentLevel;
 
 
@@ -56,8 +59,10 @@ public class ChooseAreaFragment extends Fragment {
 
     private List<Subject> subjectList;
     private List<Course> courseList;
+    private List<Chapter> chapterList;
     private Subject selectedSubject;
     private Course selectedCourse;
+    private Chapter selectedChapter;
 
     private String endpoint = "http://bj.bcebos.com";
     private String ak = "EEdfea963ed6544446235cc168976715";
@@ -89,31 +94,14 @@ public class ChooseAreaFragment extends Fragment {
                     queryCourses();
                 }else  if (currentLevel == LEVEL_COURSE){
                     selectedCourse = courseList.get(position);
-//                    titleText.setText(selectedCourse.getCourseName());
-//                    backButton.setVisibility(View.VISIBLE);
-                    String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
-//                    if (getActivity() instanceof MainActivity){
+                    queryChapter();
+                }else if (currentLevel == LEVEL_CHAPTER){
+                    selectedChapter = chapterList.get(position);
+                    String selectedChapterName = "https://"+bucketName+".bj.bcebos.com/"+selectedSubject.getSubjectName()+"/"+selectedCourse.getCourseName()+"/"+selectedChapter.getChapterName();
                         Intent intent = new Intent(getActivity(),ChapterActivity.class);
-                        intent.putExtra("selectedCourseName",selectedCourseName);
+                        intent.putExtra("selectedChapterName",selectedChapterName);
                         startActivity(intent);
                         getActivity().finish();
-//                  }else if (getActivity() instanceof ChapterActivity){
-//                        ChapterActivity activity = (ChapterActivity) getActivity();
-//                        activity.drawerLayout.closeDrawers();
-//                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                            @Override
-//                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                                selectedCourse = courseList.get(position);
-//                                String selectedCourseName = "https://"+bucketName+".bj.bcebos.com/"+selectedCourse.getCourseName();
-//                                Intent intent = new Intent(getActivity(),ChapterActivity.class);
-//                                intent.putExtra("selectedCourseName",selectedCourseName);
-//                                startActivity(intent);
-//                                getActivity().finish();
-//                            }
-//                        });
-                        //activity.swipeRefreshLayout.setRefreshing(true);
-
-//                    }
                 }
             }
         });
@@ -131,6 +119,8 @@ public class ChooseAreaFragment extends Fragment {
                 }else  if (currentLevel == LEVEL_COURSE){
                     querySubjects();
 
+                }else if (currentLevel == LEVEL_CHAPTER){
+                    queryCourses();
                 }
             }
         });
@@ -138,17 +128,40 @@ public class ChooseAreaFragment extends Fragment {
         /*
         第一次运行碎片时要运行的方法
          */
-        //querySubjects();
         querySubjects();
 
     }
+
+    /*
+优先从数据库查询数据并显示，如果没有，从服务上查询并存入Subject数据库
+ */
+    private void querySubjects() {
+        titleText.setText("科目");
+        backButton.setVisibility(View.VISIBLE);
+        //DataSupport.deleteAll(Subject.class);
+        subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
+        //Log.d("xsy1", "querySubjects: "+subjectList.size());
+        if (subjectList.size()>0){
+            dataList.clear();
+            for (Subject subject:subjectList){
+                dataList.add(subject.getSubjectName());
+            }
+            adapter.notifyDataSetChanged();
+            listView.setSelection(0);
+            currentLevel = LEVEL_SUBJECT;
+        }else {
+            BosUtil.sendSubjectRequestToBos(ak,sk,endpoint,bucketName);
+
+        }
+    }
+
     /*
     优先从数据库查询数据并显示，如果没有，从服务上查询并存入Course数据库
      */
     private void queryCourses() {
         titleText.setText(selectedSubject.getSubjectName());
         backButton.setVisibility(View.VISIBLE);
-        courseList= DataSupport.where("courseid = ?", String.valueOf(selectedSubject.getId())).find(Course.class);//从数据库读取数据
+        courseList= DataSupport.where("CourseofsubjectName = ?", String.valueOf(selectedSubject.getSubjectName())).find(Course.class);//从数据库读取数据
         if (courseList.size()>0){
             dataList.clear();
             for (Course course:courseList){
@@ -163,24 +176,22 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     /*
-    优先从数据库查询数据并显示，如果没有，从服务上查询并存入Subject数据库
-     */
-    private void querySubjects() {
-        titleText.setText("科目");
+优先从数据库查询数据并显示，如果没有，从服务上查询并存入Course数据库
+ */
+    private void queryChapter() {
+        titleText.setText(selectedCourse.getCourseName());
         backButton.setVisibility(View.VISIBLE);
-        //DataSupport.deleteAll(Subject.class);
-        subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
-        //Log.d("xsy1", "querySubjects: "+subjectList.size());
-        if (subjectList.size()>0){
+        chapterList= DataSupport.where("ChapterOfCourseName = ?", String.valueOf(selectedCourse.getCourseName())).find(Chapter.class);//从数据库读取数据
+        if (chapterList.size()>0){
             dataList.clear();
-            for (Subject subject:subjectList){
-                    dataList.add(subject.getSubjectName());
+            for (Chapter chapter:chapterList){
+                dataList.add(chapter.getChapterName());
             }
             adapter.notifyDataSetChanged();
             listView.setSelection(0);
-            currentLevel = LEVEL_SUBJECT;
+            currentLevel = LEVEL_CHAPTER;
         }else {
-            BosUtil.sendSubjectRequestToBos(ak,sk,endpoint,bucketName);
+            BosUtil.sendChapterRequestToBos(ak,sk,endpoint,bucketName,selectedCourse);
         }
     }
 

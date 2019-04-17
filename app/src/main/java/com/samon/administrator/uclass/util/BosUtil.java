@@ -15,6 +15,7 @@ import com.baidubce.services.bos.model.CreateBucketResponse;
 import com.baidubce.services.bos.model.ListObjectsResponse;
 import com.baidubce.services.bos.model.ObjectMetadata;
 import com.baidubce.services.bos.model.PutObjectResponse;
+import com.samon.administrator.uclass.db.Chapter;
 import com.samon.administrator.uclass.db.Course;
 import com.samon.administrator.uclass.db.Subject;
 import com.samon.administrator.uclass.db.User;
@@ -45,13 +46,12 @@ public class BosUtil {
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
                 String[] key;
-                int i;
+                int i=0;
                 for (BosObjectSummary objectSummary : listing.getContents()) {
                     Subject subject = new Subject();
                     key = objectSummary.getKey().split("\\/");//正刚表达式，以“/"符号将字符串划分为几段字符串，存放在字符串数组key中。
                     if (key.length==1){
                     //if (objectSummary.getSize()==0){
-                        i = 0;
                         subject.setSubjectName(key[0]);
                         //subject.setSubjectName(objectSummary.getKey());
                         subject.setSize(objectSummary.getSize());
@@ -79,22 +79,61 @@ public class BosUtil {
             public void run() {
                 ListObjectsResponse listing = client.listObjects(bucketName);
                 String[] key;
+                int i=0;
                 for (BosObjectSummary objectSummary : listing.getContents()) {
                     key = objectSummary.getKey().split("\\/");
                     if ((key.length==2)&&(objectSummary.getKey().contains(selectedSubject.getSubjectName()))){
-                    //if (objectSummary.getKey().contains(selectedSubject.getSubjectName())){
+
                         Course course = new Course();
                         course.setCourseName(key[1]);
                         //course.setCourseName(objectSummary.getKey());
                         course.setCourseSize(objectSummary.getSize());
-                        course.setCourseId(selectedSubject.getId());
+                        course.setSubjectId(selectedSubject.getId());
+                        course.setCourseofsubjectName(selectedSubject.getSubjectName());
+                        course.setCourseId(i);
                         course.save();
-                        Log.d("xsy5", "run: "+course.getCourseName()+"id"+course.getCourseId());
+                        i++;
+                        Log.d("xsy5", "sendBosRequest: "+course.getCourseName()+"courseid"+course.getCourseId()+";subjectid"+course.getSubjectId());
                     }
                 }
             }
         }).start();
     }
+
+    /*
+从服务器上读取数据，筛选条件为被选中的目录字段和id号，存入本地数据库
+ */
+    public static void sendChapterRequestToBos(String AccessKeyID, String SecretAccessKey, String EndPoint, final String bucketName, final Course selectedCourse) {
+        BosClientConfiguration config = new BosClientConfiguration();
+        config.setCredentials(new DefaultBceCredentials(AccessKeyID, SecretAccessKey));   //您的AK/SK
+        config.setEndpoint(EndPoint);    //传入Bucket所在区域域名
+        final BosClient client = new BosClient(config);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ListObjectsResponse listing = client.listObjects(bucketName);
+                String[] key;
+                int i=0;
+                for (BosObjectSummary objectSummary : listing.getContents()) {
+                    key = objectSummary.getKey().split("\\/");
+                    if ((key.length==3)&&(objectSummary.getKey().contains(selectedCourse.getCourseName()))){
+
+                        Chapter chapter = new Chapter();
+                        chapter.setChapterName(key[2]);
+                        chapter.setChapterSize(objectSummary.getSize());
+                        chapter.setChapterId(i);
+                        chapter.setCourseId(selectedCourse.getCourseId());
+                        chapter.setChapterOfCourseName(selectedCourse.getCourseName());
+                        chapter.save();
+                        i++;
+                        Log.d("xsy6", "run: "+chapter.getChapterName()+";courseid"+chapter.getCourseId()+";chapterid"+chapter.getChapterId());
+                    }
+                }
+            }
+        }).start();
+    }
+
     /*
     将注册的用户名和密码上传到服务器
      */

@@ -7,6 +7,7 @@ public class Course extends DataSupport {
     private String courseName;
     private long courseSize;
     private String courseofsubjectName;
+    private int SubjectId;
 
     public String getCourseofsubjectName() {
         return courseofsubjectName;
@@ -38,5 +39,13 @@ public class Course extends DataSupport {
 
     public void setCourseSize(long courseSize) {
         this.courseSize = courseSize;
+    }
+
+    public int getSubjectId() {
+        return SubjectId;
+    }
+
+    public void setSubjectId(int subjectId) {
+        SubjectId = subjectId;
     }
 }
