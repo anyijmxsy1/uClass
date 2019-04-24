@@ -138,9 +138,7 @@ public class ChooseAreaFragment extends Fragment {
     private void querySubjects() {
         titleText.setText("科目");
         backButton.setVisibility(View.VISIBLE);
-        //DataSupport.deleteAll(Subject.class);
         subjectList = DataSupport.findAll(Subject.class);//从数据库读取数据
-        //Log.d("xsy1", "querySubjects: "+subjectList.size());
         if (subjectList.size()>0){
             dataList.clear();
             for (Subject subject:subjectList){
@@ -150,7 +148,7 @@ public class ChooseAreaFragment extends Fragment {
             listView.setSelection(0);
             currentLevel = LEVEL_SUBJECT;
         }else {
-            BosUtil.sendSubjectRequestToBos(ak,sk,endpoint,bucketName);
+            sendSubjectRequestToBos(ak,sk,endpoint,bucketName);
 
         }
     }
@@ -172,6 +170,7 @@ public class ChooseAreaFragment extends Fragment {
             currentLevel = LEVEL_COURSE;
         }else {
             BosUtil.sendCourseRequestToBos(ak,sk,endpoint,bucketName,selectedSubject);
+
         }
     }
 
@@ -195,5 +194,40 @@ public class ChooseAreaFragment extends Fragment {
         }
     }
 
+    /*
+  从服务器中读取部分数据，筛选条件是以size的大小为0的目录，存入本地数据库
+   */
+    public static void sendSubjectRequestToBos(String AccessKeyID,String SecretAccessKey,String EndPoint,final String bucketName){
+        BosClientConfiguration config = new BosClientConfiguration();
+        config.setCredentials(new DefaultBceCredentials(AccessKeyID, SecretAccessKey));   //您的AK/SK
+        config.setEndpoint(EndPoint);    //传入Bucket所在区域域名
+        final BosClient client = new BosClient(config);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ListObjectsResponse listing = client.listObjects(bucketName);
+                String[] key;
+                int i=0;
+                for (BosObjectSummary objectSummary : listing.getContents()) {
+                    Subject subject = new Subject();
+                    key = objectSummary.getKey().split("\\/");//正刚表达式，以“/"符号将字符串划分为几段字符串，存放在字符串数组key中。
+                    if (key.length==1){
+                        //if (objectSummary.getSize()==0){
+                        subject.setSubjectName(key[0]);
+                        //subject.setSubjectName(objectSummary.getKey());
+                        subject.setSize(objectSummary.getSize());
+                        subject.setId(i);
+                        subject.save();//存入数据库
+                        i++;
+                        Log.d("xsy4", "sendBosRequest: "+subject.getSubjectName()+"id"+subject.getId());
+                    }
+                }
+
+            }
+        }).start();
+
+
+    }
 
 }

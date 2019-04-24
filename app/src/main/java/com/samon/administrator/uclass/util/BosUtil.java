@@ -61,8 +61,11 @@ public class BosUtil {
                         Log.d("xsy4", "sendBosRequest: "+subject.getSubjectName()+"id"+subject.getId());
                     }
                 }
+
             }
         }).start();
+
+
     }
 
     /*
